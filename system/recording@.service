@@ -1,0 +1,16 @@
+[Unit]
+Description=Recording from %i Camera Service
+After=network.target
+
+[Service]
+Type=simple
+KillSignal=HUP
+User=camera
+SyslogIdentifier=recording_from_%i
+ExecStart=/bin/bash -a -c 'source /home/surveillance/config/recording.conf && mkdir -p /home/surveillance/recordings/%i && cd /home/surveillance/recordings/%i && exec /usr/bin/openRTSP -4 -d 3600 -f 25 -t -v rtsp://admin:admin@%i/1.sdp > $DATE.mp4'
+Restart=always
+RestartSec=10
+#Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

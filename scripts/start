@@ -1,6 +1,10 @@
 #!/bin/bash
+# Подтягиваем параметры
 source /home/surveillance/config/$1.conf
+# Если нет диреткории для хранения записей, создаём
 mkdir -p /home/surveillance/recordings/$1
-find /home/surveillance/recordings/$1 -mtime +7 -delete
+# Удаляем записи старше указанного срока
+find /home/surveillance/recordings/$1 -mtime +$DAYS -delete
+# Записываем
 cd /home/surveillance/recordings/$1
 exec /usr/bin/openRTSP -4 -d 3600 -f 20 -t -v $URL > $DATE.mp4

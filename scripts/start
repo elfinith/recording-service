@@ -1,0 +1,6 @@
+#!/bin/bash
+source /home/surveillance/config/$1.conf
+mkdir -p /home/surveillance/recordings/$1
+find /home/surveillance/recordings/$1 -mtime +7 -delete
+cd /home/surveillance/recordings/$1
+exec /usr/bin/openRTSP -4 -d 3600 -f 20 -t -v $URL > $DATE.mp4

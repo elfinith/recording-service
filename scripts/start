@@ -7,4 +7,4 @@ mkdir -p /home/surveillance/recordings/$1
 find /home/surveillance/recordings/$1 -mtime +$DAYS -delete
 # Записываем
 cd /home/surveillance/recordings/$1
-exec /usr/bin/openRTSP -4 -d 3600 -f 20 -t -v $URL > $DATE.mp4
+exec /usr/bin/openRTSP -4 -d 3600 $OPTIONS -t -v $URL > $DATE.mp4

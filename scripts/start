@@ -4,7 +4,9 @@ source /home/surveillance/config/$1.conf
 # Если нет диреткории для хранения записей, создаём
 mkdir -p /home/surveillance/recordings/$1
 # Удаляем записи старше указанного срока
-find /home/surveillance/recordings/$1 -mtime +$DAYS -delete
+find /home/surveillance/recordings/$1 -mtime $DAYS -delete
+# Удаляем файлы с нулевым размером
+find /home/surveillance/recordings/$1 -size 0 -delete
 # Записываем
 cd /home/surveillance/recordings/$1
-exec /usr/bin/openRTSP -4 -d 3600 $OPTIONS -t -v $URL > $DATE.mp4
+exec /usr/bin/openRTSP -d 3600 $OPTIONS -t -v $URL | /usr/bin/ffmpeg -i - -vcodec mpeg4 $DATE.mp4

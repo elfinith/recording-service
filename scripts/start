@@ -9,4 +9,12 @@ find /home/surveillance/recordings/$1 -mtime $DAYS -delete
 find /home/surveillance/recordings/$1 -size 0 -delete
 # Записываем
 cd /home/surveillance/recordings/$1
-exec /usr/bin/openRTSP -d 3600 $OPTIONS -t -v $URL | /usr/bin/ffmpeg -i - -vcodec mpeg4 $DATE.mp4
+# Использовать ли компрессию
+if [ $COMPRESSION = on ]
+then
+    # - Вариант с компрессией
+    exec /usr/bin/openRTSP -d 3600 $RTSP_OPTIONS -t -v $URL | /usr/bin/ffmpeg -i - $FFMPEG_OPTIONS $DATE.mp4
+else
+    # - Вариант без компрессии
+    exec /usr/bin/openRTSP -4 -d 3600 $RTSP_OPTIONS -t -v $URL > $DATE.mp4
+fi

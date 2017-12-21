@@ -1,0 +1,25 @@
+#!/bin/bash
+HOME_PATH=/home/surveillance
+CONFIG_PATH=$HOME_PATH/config
+LOG_PATH=$HOME_PATH/logs/checkrec.log
+# индикатор зависшей слуюбы - строка "hour" в статусе. можно хоть "day", хоть "min"
+UPTIME_INDICATOR="hour"
+# перебираем все зарегистрированные камеры
+ls $CONFIG_PATH | xargs -n 1 | cut -d. -f1 | while read LINE; do
+    # для каждой камеры смотрим статус службы
+    CAMERA_NAME=$LINE
+    DAEMON_STATUS=$(systemctl is-active recording@$CAMERA_NAME)
+    RESTART_COMMAND="systemctl restart recording@$CAMERA_NAME"
+    # если слуюба активна - проверяем время работы
+    if [ $DAEMON_STATUS  == "active" ] 
+    then
+        STARTED_STRING=$(systemctl status recording@$CAMERA_NAME | grep active)
+        # если время работы час и более - перезапускаем службу и пишем в лог
+        if echo $STARTED_STRING | grep -q -s -F $UPTIME_INDICATOR 
+        then 
+    	    $RESTART_COMMAND
+    	    echo "`date '+%F %T'`: $CAMERA_NAME was restarted (found: $STARTED_STRING)" >> $LOG_PATH
+    	fi     
+    fi
+done
+
